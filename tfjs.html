@@ -12,10 +12,16 @@
   
   <div>
     imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/hFUANgu.jpg"> <button onclick="main()">start</button>
+    <select id="backendSelectEl">
+      <option>cpu</option>
+      <option>webgl</option>
+    </select>
   </div>
      
   <script>
     window.main = async function() {
+      
+      await tf.setBackend(backendSelectEl.value);
     
       console.log("Loading model...");
       const model = await tf.loadGraphModel(`./tfjs-model/model.json?raw=true`);
