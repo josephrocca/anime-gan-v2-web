@@ -11,12 +11,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.7/dist/tf-tflite.js"></script>
   
   imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/hFUANgu.jpg"> <button onclick="main()">start</button>
-  <script type=module>
-    console.log("Loading model...");
-    const model = await tflite.loadTFLiteModel('./anime-gan-v2.tflite');
-    console.log("Model loaded.");
-
+  <script>
     async function main() {
+      
+      console.log("Loading model...");
+      const model = await tflite.loadTFLiteModel('./anime-gan-v2.tflite');
+      console.log("Model loaded.");
       
       let rgbData = await getRgbData(imgUrlInput.value);
 
@@ -27,7 +27,12 @@
       console.log("Finished inference.");
       
       output = output["StatefulPartitionedCall:0"].mul(0.5).add(0.5);
-      return await tf.browser.toPixels(output); //let outputArray = await output.array();
+      
+      let canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 512;
+      document.body.appendChild(canvas);
+      await tf.browser.toPixels(output, canvas); //let outputArray = await output.array();
     }
     
     
