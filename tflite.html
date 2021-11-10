@@ -11,11 +11,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.7/dist/tf-tflite.js"></script>
   
   <div>
-    imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/IpFz3za.jpg"> <button onclick="main()">start</button>
+    imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/IpFz3za.jpg"> <button id="startBtn" onclick="main()">start</button>
   </div>
   
   <script>
     async function main() {
+      startBtn.disabled = true;
+      startBtn.innerHTML = "see console";
       
       console.log("Loading model...");
       const model = await tflite.loadTFLiteModel('./anime-gan-v2.tflite');
