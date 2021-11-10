@@ -16,11 +16,13 @@
       <option>cpu</option>
       <option>webgl</option>
     </select>
-    <button onclick="main()">start</button>
+    <button id="startBtn" onclick="main()">start</button>
   </div>
      
   <script>
-    window.main = async function() {
+    async function main() {
+      startBtn.disabled = true;
+      startBtn.innerHTML = "see console";
       
       await tf.setBackend(backendSelectEl.value);
     
