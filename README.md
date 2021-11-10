@@ -1,4 +1,4 @@
-# AnimeGANv2 tfjs/tflite
+# AnimeGANv2 tfjs/tflite/onnx
 
 A browser version of this: https://huggingface.co/spaces/akhaliq/AnimeGANv2
 
