@@ -7,13 +7,18 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.9.0/dist/ort.js"></script>
     
     <div>
-      imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/hFUANgu.jpg"> <button onclick="main()">start</button>
+      imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/IpFz3za.jpg">
+      backend: <select id="backendSelectEl">
+        <option>wasm</option>
+        <option>webgl</option>
+      </select>
+      <button onclick="main()">start</button>
     </div>
     
     <script>
       async function main() {
         console.log("Loading model...");
-        const session = await ort.InferenceSession.create('./anime-gan-v2.onnx');
+        const session = await ort.InferenceSession.create('./anime-gan-v2.onnx', { executionProviders: [backendSelectEl.value] });
         console.log("Model loaded.");
 
         let rgbData = await getRgbData(imgUrlInput.value);
