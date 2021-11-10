@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu@3.11.0/dist/tf-backend-cpu.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.7/dist/tf-tflite.js"></script>
   
+  imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/hFUANgu.jpg"> <button onclick="main()">start</button>
   <script type=module>
     console.log("Loading model...");
     const model = await tflite.loadTFLiteModel('./anime-gan-v2.tflite');
@@ -17,7 +18,21 @@
 
     async function main() {
       
-      let blob = await fetch("https://i.imgur.com/hFUANgu.jpg", {referrer:""}).then(r => r.blob());
+      let rgbData = await getRgbData(imgUrlInput.value);
+
+      let input = {'serving_default_input.1:0': tf.tensor([rgbData], [1,3,512,512], "float32")};
+      
+      console.log("Running inference...");
+      let output = await model.predict(input);
+      console.log("Finished inference.");
+      
+      output = output["StatefulPartitionedCall:0"].mul(0.5).add(0.5);
+      return await tf.browser.toPixels(output); //let outputArray = await output.array();
+    }
+    
+    
+    async function getRgbData(imgUrl) {
+      let blob = await fetch(imgUrl, {referrer:""}).then(r => r.blob());
       let img = await createImageBitmap(blob);
 
       let canvas = new OffscreenCanvas(512, 512);
@@ -37,18 +52,9 @@
         rgbData[0][y][x] = (d[i+0]/255) * 2 - 1;
         rgbData[1][y][x] = (d[i+1]/255) * 2 - 1;
         rgbData[2][y][x] = (d[i+2]/255) * 2 - 1;
-      }
-
-      let input = {'serving_default_input.1:0': tf.tensor([rgbData], [1,3,512,512], "float32")};
-      
-      console.log("Running inference...");
-      let output = await model.predict(input);
-      console.log("Finished inference.");
-      
-      output = output["StatefulPartitionedCall:0"].mul(0.5).add(0.5);
-      return await tf.browser.toPixels(output); //let outputArray = await output.array();
+      } 
+      return rgbData;
     }
-    main()
   </script>
   
 </body>
