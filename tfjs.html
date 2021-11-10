@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>AnimeGANv2 tfjs</title>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@3.11.0/dist/tf-backend-wasm.js"></script>
+  
+  imgur.com url (ideally 512x512 px): <input id="imgUrlInput" value="https://i.imgur.com/hFUANgu.jpg"> <button onclick="main()">start</button>
+  <script>
+    window.main = async function() {
+    
+      console.log("Loading model...");
+      const model = await tf.loadGraphModel(`./tfjs-model/model.json?raw=true`);
+      console.log("Model loaded.");
+      
+      let rgbData = await getRgbData(imgUrlInput.value);
+
+      let input = {'input_1': tf.tensor([rgbData], [1,3,512,512], "float32")};
+      
+      console.log("Running inference...");
+      let output = await model.executeAsync(input, ["Identity"]);
+      console.log("Finished inference.");
+      
+      output = output["Identity"].mul(0.5).add(0.5);
+      
+      let canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 512;
+      document.body.appendChild(canvas);
+      await tf.browser.toPixels(output, canvas); //let outputArray = await output.array();
+    }
+    
+    
+    async function getRgbData(imgUrl) {
+      let blob = await fetch(imgUrl, {referrer:""}).then(r => r.blob());
+      let img = await createImageBitmap(blob);
+
+      let canvas = new OffscreenCanvas(512, 512);
+      let ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      let rgbData = [[], [], []]; // [r, g, b]
+      // remove alpha and put into correct shape:
+      let d = imageData.data;
+      for(let i = 0; i < d.length; i += 4) {
+        let x = (i/4) % canvas.width;
+        let y = Math.floor((i/4) / canvas.width)
+        if(!rgbData[0][y]) rgbData[0][y] = [];
+        if(!rgbData[1][y]) rgbData[1][y] = [];
+        if(!rgbData[2][y]) rgbData[2][y] = [];
+        rgbData[0][y][x] = (d[i+0]/255) * 2 - 1;
+        rgbData[1][y][x] = (d[i+1]/255) * 2 - 1;
+        rgbData[2][y][x] = (d[i+2]/255) * 2 - 1;
+      } 
+      return rgbData;
+    }
+  </script>
+  
+</body>
+</html>
