@@ -21,7 +21,8 @@
         startBtn.innerHTML = "see console";
         
         console.log("Loading model...");
-        const session = await ort.InferenceSession.create('./anime-gan-v2.onnx', { executionProviders: [backendSelectEl.value] });
+        let modelPath = backendSelectEl.value === "webgl" ? './anime-gan-v2-int32.onnx' : './anime-gan-v2.onnx';
+        const session = await ort.InferenceSession.create(modelPath, { executionProviders: [backendSelectEl.value] });
         console.log("Model loaded.");
 
         let rgbData = await getRgbData(imgUrlInput.value);
