@@ -14,11 +14,16 @@
       </select>
       <button id="startBtn" onclick="main()">start</button>
     </div>
+    <p><a href="https://github.com/josephrocca/anime-gan-v2-web">github repo</a></p>
     
     <script>
       async function main() {
         startBtn.disabled = true;
         startBtn.innerHTML = "see console";
+        
+        if(backendSelectEl.value === "webgl") {
+          alert("The webgl runtime doesn't currently work (open console to see error). More details in readme."); 
+        }
         
         console.log("Loading model...");
         let modelPath = backendSelectEl.value === "webgl" ? './anime-gan-v2-int32.onnx' : './anime-gan-v2.onnx';
