@@ -26,7 +26,8 @@
         }
         
         console.log("Loading model...");
-        let modelPath = backendSelectEl.value === "webgl" ? './anime-gan-v2-int32.onnx' : './anime-gan-v2.onnx';
+        // let modelPath = backendSelectEl.value === "webgl" ? './anime-gan-v2-int32.onnx' : './anime-gan-v2.onnx';
+        let modelPath = './anime-gan-v2.onnx';
         const session = await ort.InferenceSession.create(modelPath, { executionProviders: [backendSelectEl.value] });
         console.log("Model loaded.");
 
